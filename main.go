@@ -6,25 +6,39 @@ func main() {
 
 	var name string
 	var surname string
+	var numberOfInnings int
+
 	fmt.Print("Enter the player name:")
 	fmt.Scan(&name, &surname)
-	runsScoredByKohli := [5]int{73, 86, 1, 72, 65}
-	ballsFacedByKohli := [5]int{45, 63, 3, 87, 73}
-	totalRunsScored := sumOfArray(runsScoredByKohli)
-	totalBallsFaced := sumOfArray(ballsFacedByKohli)
 
-	fmt.Println("Total runs scored by", name, surname, "in last 5 innings are:", totalRunsScored)
-	fmt.Println("Total balls faced by", name, surname, "in last 5 innings are:", totalBallsFaced)
+	fmt.Println("Enter the number of innings played by", name, surname, ":")
+	fmt.Scan(&numberOfInnings)
+
+	runsScoredByPlayer := make([]int, numberOfInnings)
+	ballsFacedByPlayer := make([]int, numberOfInnings)
+
+	for i := 0; i < numberOfInnings; i++ {
+		fmt.Println("Enter the runs scored by", name, surname, "in innings", (i + 1))
+		fmt.Scan(&runsScoredByPlayer[i])
+		fmt.Println("Enter the number of balls faced by", name, surname, "in innings", (i + 1))
+		fmt.Scan(&ballsFacedByPlayer[i])
+	}
+
+	totalRunsScored := sumOfArray(runsScoredByPlayer)
+	totalBallsFaced := sumOfArray(ballsFacedByPlayer)
+
+	fmt.Println("Total runs scored by", name, surname, "in", numberOfInnings, "innings are:", totalRunsScored)
+	fmt.Println("Total balls faced by", name, surname, "in", numberOfInnings, "innings are:", totalBallsFaced)
 
 	strikeRate := getStrikeRate(float64(totalRunsScored), float64(totalBallsFaced))
-	fmt.Println("Strike Rate of", name, surname, "in last 5 innings is:", float32(strikeRate))
+	fmt.Println("Strike Rate of", name, surname, "in", numberOfInnings, "innings is:", float32(strikeRate))
 
 }
 
-func sumOfArray(arr [5]int) int {
+func sumOfArray(arr []int) int {
 	sum := 0
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < cap(arr); i++ {
 		sum = sum + arr[i]
 	}
 
