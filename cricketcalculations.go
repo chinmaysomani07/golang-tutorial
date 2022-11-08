@@ -52,7 +52,7 @@ func main() {
 func sumOfArray(arr []int) int {
 	sum := 0
 
-	for i := 0; i < cap(arr); i++ {
+	for i := 0; i < len(arr); i++ {
 		sum = sum + arr[i]
 	}
 
