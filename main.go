@@ -7,12 +7,16 @@ func main() {
 	var name string
 	var surname string
 	var numberOfInnings int
+	var numberOfNotOut int
 
 	fmt.Print("Enter the player name:")
 	fmt.Scan(&name, &surname)
 
 	fmt.Println("Enter the number of innings played by", name, surname, ":")
 	fmt.Scan(&numberOfInnings)
+
+	fmt.Println("Enter the nunber of not out innings by", name, surname, ":")
+	fmt.Scan(&numberOfNotOut)
 
 	runsScoredByPlayer := make([]int, numberOfInnings)
 	ballsFacedByPlayer := make([]int, numberOfInnings)
@@ -33,6 +37,9 @@ func main() {
 	strikeRate := getStrikeRate(float64(totalRunsScored), float64(totalBallsFaced))
 	fmt.Println("Strike Rate of", name, surname, "in", numberOfInnings, "innings is:", float32(strikeRate))
 
+	average := getAverage(totalRunsScored, numberOfInnings, numberOfNotOut)
+	fmt.Println("Average of", name, surname, "in", numberOfInnings, "innings is:", average)
+
 }
 
 func sumOfArray(arr []int) int {
@@ -49,4 +56,10 @@ func getStrikeRate(runsScored float64, ballsFaced float64) float64 {
 
 	strikeRate := (runsScored * 100) / ballsFaced
 	return (strikeRate)
+}
+
+func getAverage(totalRunsScored int, numberOfInnings int, numberOfNotOut int) float64 {
+
+	average := totalRunsScored / (numberOfInnings - numberOfNotOut)
+	return float64(average)
 }
