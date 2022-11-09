@@ -45,8 +45,8 @@ func main() {
 
 		average := getAverage(float64(totalRunsScored), float64(numberOfInnings), float64(numberOfNotOut))
 		fmt.Println("Average of", name, surname, "in", numberOfInnings, "innings is:", average)
-	}
 
+	}
 }
 
 func sumOfArray(arr []int) int {
@@ -59,7 +59,7 @@ func sumOfArray(arr []int) int {
 	return sum
 }
 
-func getStrikeRate(runsScored float64, ballsFaced float64) float64 {
+func getStrikeRate(runsScored float64, ballsFaced float64) float64 { //this is a method
 
 	strikeRate := (runsScored * 100) / ballsFaced
 	return (strikeRate)
