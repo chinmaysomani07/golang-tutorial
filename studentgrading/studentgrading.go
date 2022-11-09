@@ -23,7 +23,6 @@ func main() {
 	for i := 0; i < len(students); i++ {
 		var average float64
 		average = students[i].getAverage()
-
 		grade := calculateGrade(average)
 
 		fmt.Println("Average of", students[i].FirstName, students[i].LastName, "from university", students[i].University, "is:", average)
