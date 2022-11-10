@@ -23,42 +23,17 @@ func main() {
 	students := make([]Student, 0)
 	students = addStudents()
 
-	for i := 0; i < len(students); i++ {
-		var average float64
-		average = students[i].getAverage()
-		students[i].AverageScore = average
-		grade := calculateGrade(average)
-		students[i].Grade = grade
+	universities := make([]string, 0)
+	universities = addUniversities()
 
-		fmt.Println("Average of", students[i].FirstName, students[i].LastName, "from university", students[i].University, "is:", average)
-		fmt.Println("The grade is:", grade)
-	}
+	getAverageScoreInfo(students)
 
 	overallTopper := getOverallTopper(students)
 	fmt.Println("The overall topper is:", overallTopper.FirstName, overallTopper.LastName, "with average score of", overallTopper.AverageScore, "and grade", overallTopper.Grade)
 
 	universityWiseTopper := make([]Student, 0)
-	universities := make([]string, 0)
-	universities = append(universities, "RCOEM", "Mumbai University", "Delhi University", "Pune University")
-
-	for i := 0; i < len(universities); i++ {
-		topper := Student{"", "", "", 0.0, 0.0, 0.0, 0.0, 0.0, ""}
-		if universities[i] == "RCOEM" {
-			topper = getUniversityTopper(students, universities[i])
-			universityWiseTopper = append(universityWiseTopper, topper)
-		} else if universities[i] == "Mumbai University" {
-			topper = getUniversityTopper(students, universities[i])
-			universityWiseTopper = append(universityWiseTopper, topper)
-		} else if universities[i] == "Delhi University" {
-			topper = getUniversityTopper(students, universities[i])
-			universityWiseTopper = append(universityWiseTopper, topper)
-		} else {
-			topper = getUniversityTopper(students, universities[i])
-			universityWiseTopper = append(universityWiseTopper, topper)
-		}
-	}
-
-	fmt.Println("University wise toppers list is: ", universityWiseTopper)
+	universityWiseTopper = getUniversityWiseTopper(universities, students)
+	fmt.Println("University wise toppersss list is: ", universityWiseTopper)
 
 }
 
@@ -72,6 +47,14 @@ func addStudents() []Student {
 	students = append(students, Student{"Anmol", "Gupta", "Pune University", 82, 73, 64, 77, 0.0, ""})
 
 	return students
+}
+
+func addUniversities() []string {
+
+	universities := make([]string, 0)
+	universities = append(universities, "RCOEM", "Mumbai University", "Delhi University", "Pune University")
+
+	return universities
 }
 
 func (student Student) getAverage() float64 { //this is method
@@ -96,6 +79,19 @@ func calculateGrade(average float64) string { //this is a function
 	return grade
 }
 
+func getAverageScoreInfo(students []Student) {
+	for i := 0; i < len(students); i++ {
+		var average float64
+		average = students[i].getAverage()
+		students[i].AverageScore = average
+		grade := calculateGrade(average)
+		students[i].Grade = grade
+
+		fmt.Println("Average of", students[i].FirstName, students[i].LastName, "from university", students[i].University, "is:", average)
+		fmt.Println("The grade is:", grade)
+	}
+}
+
 func getOverallTopper(students []Student) Student {
 	topper := Student{"", "", "", 0.0, 0.0, 0.0, 0.0, 0.0, ""}
 	var maxScore float64 = 0.0
@@ -109,7 +105,29 @@ func getOverallTopper(students []Student) Student {
 	return topper
 }
 
-func getUniversityTopper(students []Student, university string) Student {
+func getUniversityWiseTopper(universities []string, students []Student) []Student {
+	universityWiseTopperSlice := make([]Student, 0)
+	for i := 0; i < len(universities); i++ {
+		topper := Student{"", "", "", 0.0, 0.0, 0.0, 0.0, 0.0, ""}
+		if universities[i] == "RCOEM" {
+			topper = getIndividualUniversityTopper(students, universities[i])
+			universityWiseTopperSlice = append(universityWiseTopperSlice, topper)
+		} else if universities[i] == "Mumbai University" {
+			topper = getIndividualUniversityTopper(students, universities[i])
+			universityWiseTopperSlice = append(universityWiseTopperSlice, topper)
+		} else if universities[i] == "Delhi University" {
+			topper = getIndividualUniversityTopper(students, universities[i])
+			universityWiseTopperSlice = append(universityWiseTopperSlice, topper)
+		} else {
+			topper = getIndividualUniversityTopper(students, universities[i])
+			universityWiseTopperSlice = append(universityWiseTopperSlice, topper)
+		}
+	}
+
+	return universityWiseTopperSlice
+}
+
+func getIndividualUniversityTopper(students []Student, university string) Student {
 	var topper Student
 	var maxAverageScore float64
 
