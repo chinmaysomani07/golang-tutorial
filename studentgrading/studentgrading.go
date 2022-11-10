@@ -31,12 +31,12 @@ func main() {
 
 }
 
-func (student Student) getAverage() float64 { //this is function
+func (student Student) getAverage() float64 { //this is method
 	average := (student.Test1 + student.Test2 + student.Test3 + student.Test4) / 4
 	return float64(average)
 }
 
-func calculateGrade(average float64) string { //this is a method
+func calculateGrade(average float64) string { //this is a function
 
 	var grade string
 
@@ -52,3 +52,5 @@ func calculateGrade(average float64) string { //this is a method
 
 	return grade
 }
+
+//prefer functions over methods
