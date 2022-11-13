@@ -1,7 +1,12 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
+	"io"
+	"log"
+	"os"
+	"strconv"
 )
 
 type Student struct {
@@ -21,10 +26,9 @@ var myHashMap = make(map[string]Student)
 func main() {
 
 	students := make([]Student, 0)
-	students = addStudents()
 
 	universities := make([]string, 0)
-	universities = addUniversities()
+	students, universities = readDataFromCSV("grades.csv")
 
 	getAverageScoreInfo(students)
 
@@ -35,26 +39,6 @@ func main() {
 	universityWiseTopper = getUniversityWiseTopper(universities, students)
 	fmt.Println("University wise toppersss list is: ", universityWiseTopper)
 
-}
-
-func addStudents() []Student {
-
-	students := make([]Student, 0)
-	students = append(students, Student{"Chinmay", "Somani", "RCOEM", 76, 87, 66, 37, 0.0, ""})
-	students = append(students, Student{"Rutvik", "Bhute", "RCOEM", 76, 72, 66, 36, 0.0, ""})
-	students = append(students, Student{"Rishika", "Chhabrani", "Delhi University", 71, 87, 92, 72, 0.0, ""})
-	students = append(students, Student{"Shreya", "Lahoti", "Mumbai University", 87, 83, 92, 54, 0.0, ""})
-	students = append(students, Student{"Anmol", "Gupta", "Pune University", 82, 73, 64, 77, 0.0, ""})
-
-	return students
-}
-
-func addUniversities() []string {
-
-	universities := make([]string, 0)
-	universities = append(universities, "RCOEM", "Mumbai University", "Delhi University", "Pune University")
-
-	return universities
 }
 
 func (student Student) getAverage() float64 { //this is method
@@ -138,22 +122,19 @@ func getIndividualUniversityTopper(students []Student, university string) Studen
 				topper = students[j]
 				myHashMap[students[j].University] = students[j]
 			}
-		}
-		if university == "Mumbai University" {
+		} else if university == "Mumbai University" {
 			if students[j].AverageScore > maxAverageScore && students[j].University == university {
 				maxAverageScore = students[j].AverageScore
 				topper = students[j]
 				myHashMap[students[j].University] = students[j]
 			}
-		}
-		if university == "Delhi University" {
+		} else if university == "Delhi University" {
 			if students[j].AverageScore > maxAverageScore && students[j].University == university {
 				maxAverageScore = students[j].AverageScore
 				topper = students[j]
 				myHashMap[students[j].University] = students[j]
 			}
-		}
-		if university == "Pune University" {
+		} else {
 			if students[j].AverageScore > maxAverageScore && students[j].University == university {
 				maxAverageScore = students[j].AverageScore
 				topper = students[j]
@@ -162,6 +143,58 @@ func getIndividualUniversityTopper(students []Student, university string) Studen
 		}
 	}
 	return topper
+}
+
+func readDataFromCSV(path string) ([]Student, []string) {
+
+	studentsList := make([]Student, 0)
+	universities := make([]string, 0)
+	csvfile, err := os.Open("grades.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	reader := csv.NewReader((csvfile))
+
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		studentsList = append(studentsList, Student{
+			FirstName:    record[0],
+			LastName:     record[1],
+			University:   record[2],
+			Test1:        parseToInt(record[3]),
+			Test2:        parseToInt(record[4]),
+			Test3:        parseToInt(record[5]),
+			Test4:        parseToInt(record[6]),
+			AverageScore: 0.0,
+			Grade:        "",
+		})
+
+		universities = append(universities, record[2])
+	}
+
+	fmt.Println(studentsList)
+	fmt.Println(universities)
+
+	return studentsList, universities
+}
+
+func parseToInt(input string) float64 {
+	number, err := strconv.ParseInt(input, 10, 64)
+
+	if err != nil {
+		log.Println(err.Error())
+		return 0
+	}
+	return float64(number)
 }
 
 //prefer functions over methods
