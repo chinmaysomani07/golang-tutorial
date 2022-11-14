@@ -37,14 +37,7 @@ func main() {
 
 	toppersList = getUniversityWiseTopper(students)
 
-	for k, v := range toppersList {
-		fmt.Println("University is:", k, "topper is:", v)
-	}
-
-	// universityWiseTopper := make([]Student, 0)
-	// universityWiseTopper = getUniversityWiseTopper(universities, students)
-	// fmt.Println("University wise toppersss list is: ", universityWiseTopper)
-
+	displayUniversityWiseTopper(toppersList)
 }
 
 func getAverage(student Student) float64 { //this is method
@@ -161,6 +154,13 @@ func parseToFloat(input string) float64 {
 		return 0
 	}
 	return float64(number)
+}
+
+func displayUniversityWiseTopper(toppersList map[string]Student) {
+
+	for k, v := range toppersList {
+		fmt.Println("University is:", k, "topper is:", v)
+	}
 }
 
 //prefer functions over methods
