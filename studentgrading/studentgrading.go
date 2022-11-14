@@ -11,15 +11,8 @@ import (
 )
 
 type Student struct {
-	FirstName    string
-	LastName     string
-	University   string
-	Test1        float64
-	Test2        float64
-	Test3        float64
-	Test4        float64
-	AverageScore float64
-	Grade        string
+	FirstName, LastName, University, Grade   string
+	Test1, Test2, Test3, Test4, AverageScore float64
 }
 
 func main() {
@@ -39,7 +32,7 @@ func main() {
 	displayUniversityWiseTopper(toppersList)
 }
 
-func getAverage(student Student) float64 { //this is method
+func getAverage(student Student) float64 {
 	average := (student.Test1 + student.Test2 + student.Test3 + student.Test4) / 4
 	return float64(average)
 }
@@ -57,7 +50,6 @@ func calculateGrade(average float64) string { //this is a function
 	} else {
 		grade = "A"
 	}
-
 	return grade
 }
 
@@ -102,6 +94,12 @@ func getUniversityWiseTopper(students []Student) map[string]Student {
 	}
 
 	return universityWiseTopperList
+}
+
+func displayUniversityWiseTopper(toppersList map[string]Student) {
+	for k, v := range toppersList {
+		fmt.Println("University is:", k, "topper is:", v)
+	}
 }
 
 func readDataFromCSV(path string) []Student {
@@ -153,17 +151,3 @@ func parseToFloat(input string) float64 {
 	}
 	return float64(number)
 }
-
-func displayUniversityWiseTopper(toppersList map[string]Student) {
-
-	for k, v := range toppersList {
-		fmt.Println("University is:", k, "topper is:", v)
-	}
-}
-
-//prefer functions over methods
-//step down
-//not using data structure names inside variable name
-//test cases
-
-//create a map and key should be university, and val will be students struct
