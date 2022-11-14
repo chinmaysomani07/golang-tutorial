@@ -42,7 +42,7 @@ func TestCalculateGrade(t *testing.T) {
 		t.Errorf("Expected grade was %v, but got %v", expGrade, resgrade)
 	}
 
-	avgs = 69
+	avgs = 69.0
 	expGrade = "B"
 	resgrade = calculateGrade(avgs)
 
