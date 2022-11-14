@@ -32,6 +32,56 @@ func main() {
 	displayUniversityWiseTopper(toppersList)
 }
 
+func readDataFromCSV(path string) []Student {
+
+	studentsList := make([]Student, 0)
+	csvfile, err := os.Open("grades.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer csvfile.Close()
+
+	reader := csv.NewReader(bufio.NewReader(csvfile))
+	reader.Read()
+
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			fmt.Println(err)
+			break
+		}
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		studentsList = append(studentsList, Student{
+			FirstName:    record[0],
+			LastName:     record[1],
+			University:   record[2],
+			Test1:        parseToFloat(record[3]),
+			Test2:        parseToFloat(record[4]),
+			Test3:        parseToFloat(record[5]),
+			Test4:        parseToFloat(record[6]),
+			AverageScore: 0.0,
+			Grade:        "",
+		})
+	}
+
+	return studentsList
+}
+
+func parseToFloat(input string) float64 {
+	number, err := strconv.ParseInt(input, 10, 64)
+
+	if err != nil {
+		log.Println(err.Error())
+		return 0
+	}
+	return float64(number)
+}
+
 func getAverage(student Student) float64 {
 	average := (student.Test1 + student.Test2 + student.Test3 + student.Test4) / 4
 	return float64(average)
@@ -100,54 +150,4 @@ func displayUniversityWiseTopper(toppersList map[string]Student) {
 	for k, v := range toppersList {
 		fmt.Println("University is:", k, "topper is:", v)
 	}
-}
-
-func readDataFromCSV(path string) []Student {
-
-	studentsList := make([]Student, 0)
-	csvfile, err := os.Open("grades.csv")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer csvfile.Close()
-
-	reader := csv.NewReader(bufio.NewReader(csvfile))
-	reader.Read()
-
-	for {
-		record, err := reader.Read()
-		if err == io.EOF {
-			fmt.Println(err)
-			break
-		}
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		studentsList = append(studentsList, Student{
-			FirstName:    record[0],
-			LastName:     record[1],
-			University:   record[2],
-			Test1:        parseToFloat(record[3]),
-			Test2:        parseToFloat(record[4]),
-			Test3:        parseToFloat(record[5]),
-			Test4:        parseToFloat(record[6]),
-			AverageScore: 0.0,
-			Grade:        "",
-		})
-	}
-
-	return studentsList
-}
-
-func parseToFloat(input string) float64 {
-	number, err := strconv.ParseInt(input, 10, 64)
-
-	if err != nil {
-		log.Println(err.Error())
-		return 0
-	}
-	return float64(number)
 }
