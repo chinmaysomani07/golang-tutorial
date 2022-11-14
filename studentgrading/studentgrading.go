@@ -27,7 +27,6 @@ func main() {
 	students := make([]Student, 0)
 	toppersList := make(map[string]Student)
 
-	//universities := make([]string, 0)
 	students = readDataFromCSV("grades.csv")
 
 	averageScoreInfo(students)
@@ -76,7 +75,6 @@ func averageScoreInfo(students []Student) {
 }
 
 func getOverallTopper(students []Student) Student {
-	//variable and assign max stud[0]
 	var topper Student = students[0]
 
 	var maxScore float64 = 0.0
