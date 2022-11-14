@@ -142,12 +142,13 @@ func getUniversityWiseTopper(students []Student) map[string]Student {
 			universityWiseTopperList[students[i].University] = students[i]
 		}
 	}
+
 	return universityWiseTopperList
 }
 
 func displayUniversityWiseTopper(toppersList map[string]Student) {
 	for k, v := range toppersList {
-		fmt.Println("University is:", k, "and the topper is:", v.String())
+		fmt.Println("University is:", k, "and the topper is:", v)
 	}
 }
 
