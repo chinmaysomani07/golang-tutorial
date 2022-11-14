@@ -187,7 +187,7 @@ func readDataFromCSV(path string) ([]Student, []string) {
 	return studentsList, universities
 }
 
-func parseToInt(input string) float64 {
+func parseToFloat(input string) float64 {
 	number, err := strconv.ParseInt(input, 10, 64)
 
 	if err != nil {
