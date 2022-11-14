@@ -57,10 +57,6 @@ func TestUniversityWiseTopper(t *testing.T) {
 	students = append(students, Student{"Chinmay", "Somani", "RCOEM", "A", 99, 99, 99, 99, 99.0})
 	students = append(students, Student{"Vedant", "Desai", "Amravati University", "A", 89, 54, 76, 98, 79.25})
 
-	mtl0 := make(map[string]int)
-	mtl0["1"] = 1
-	mtl0["2"] = 2
-
 	mtl := make(map[string]Student)
 	mtl["Amravati University"] = Student{"Vedant", "Desai", "Amravati University", "A", 89, 54, 76, 98, 79.25}
 	mtl["RCOEM"] = Student{"Chinmay", "Somani", "RCOEM", "A", 99, 99, 99, 99, 99.0}
