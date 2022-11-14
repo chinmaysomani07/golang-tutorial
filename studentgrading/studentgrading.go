@@ -134,20 +134,23 @@ func getUniversityWiseTopper(students []Student) map[string]Student {
 	universityWiseTopperList := make(map[string]Student)
 
 	for i := 0; i < len(students); i++ {
-		if val, ok := universityWiseTopperList[students[i].University]; ok {
+		if _, ok := universityWiseTopperList[students[i].University]; ok {
 			if students[i].AverageScore > universityWiseTopperList[students[i].University].AverageScore {
-				universityWiseTopperList[students[i].University] = val
+				universityWiseTopperList[students[i].University] = students[i]
 			}
 		} else {
 			universityWiseTopperList[students[i].University] = students[i]
 		}
 	}
-
 	return universityWiseTopperList
 }
 
 func displayUniversityWiseTopper(toppersList map[string]Student) {
 	for k, v := range toppersList {
-		fmt.Println("University is:", k, "topper is:", v)
+		fmt.Println("University is:", k, "and the topper is:", v.String())
 	}
+}
+
+func (student Student) String() string {
+	return fmt.Sprintf("%v %v with an average score %v and grade: %v", student.FirstName, student.LastName, student.AverageScore, student.Grade)
 }
