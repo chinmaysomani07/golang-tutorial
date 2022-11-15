@@ -5,14 +5,16 @@ import (
 	"testing"
 )
 
+// use got and want in golang instead of expected and actual which are more of a java
+
 func TestGetAverage(t *testing.T) {
 
 	student := Student{"Chinmay", "Somani", "RCOEM", "", 99, 99, 99, 99, 0.0}
-	expectedavgm := 99.0
-	avgm := getAverage(student)
+	want := 99.0
+	got := getAverage(student)
 
-	if avgm != expectedavgm {
-		t.Errorf("Expected output: %v, but found %v", expectedavgm, avgm)
+	if got != want {
+		t.Errorf("Expected output: %v, but found %v", want, got)
 	}
 }
 
@@ -24,30 +26,30 @@ func TestGetOverallTopper(t *testing.T) {
 	students = append(students, Student{"Anmol", "Gupta", "Pune University", "A", 93, 93, 93, 93, 93.0})
 	students = append(students, Student{"Gautami", "Thakare", "No University", "A", 90, 90, 90, 90, 90.0})
 
-	topper := getOverallTopper(students)
-	exp_topper := Student{"Chinmay", "Somani", "RCOEM", "A", 99, 99, 99, 99, 99.0}
+	got := getOverallTopper(students)
+	want := Student{"Chinmay", "Somani", "RCOEM", "A", 99, 99, 99, 99, 99.0}
 
-	if topper != exp_topper {
-		t.Errorf("The expected topper is: %v, but got %v", exp_topper, topper)
+	if got != want {
+		t.Errorf("The expected topper is: %v, but got %v", want, got)
 	}
 }
 
 func TestCalculateGrade(t *testing.T) {
 
 	avgs := 93.0
-	expGrade := "A"
-	resgrade := calculateGrade(avgs)
+	want := "A"
+	got := calculateGrade(avgs)
 
-	if expGrade != resgrade {
-		t.Errorf("Expected grade was %v, but got %v", expGrade, resgrade)
+	if want != got {
+		t.Errorf("Expected grade was %v, but got %v", want, got)
 	}
 
 	avgs = 69.0
-	expGrade = "B"
-	resgrade = calculateGrade(avgs)
+	want = "B"
+	got = calculateGrade(avgs)
 
-	if expGrade != resgrade {
-		t.Errorf("Expected grade was %v, but got %v", expGrade, resgrade)
+	if want != got {
+		t.Errorf("Expected grade was %v, but got %v", want, got)
 	}
 }
 
@@ -57,13 +59,15 @@ func TestUniversityWiseTopper(t *testing.T) {
 	students = append(students, Student{"Chinmay", "Somani", "RCOEM", "A", 99, 99, 99, 99, 99.0})
 	students = append(students, Student{"Vedant", "Desai", "Amravati University", "A", 89, 54, 76, 98, 79.25})
 
-	mtl := make(map[string]Student)
-	mtl["Amravati University"] = Student{"Vedant", "Desai", "Amravati University", "A", 89, 54, 76, 98, 79.25}
-	mtl["RCOEM"] = Student{"Chinmay", "Somani", "RCOEM", "A", 99, 99, 99, 99, 99.0}
+	want := make(map[string]Student)
+	want["Amravati University"] = Student{"Vedant", "Desai", "Amravati University", "A", 89, 54, 76, 98, 79.25}
+	want["RCOEM"] = Student{"Chinmay", "Somani", "RCOEM", "A", 99, 99, 99, 99, 99.0}
 
-	toppersList := getUniversityWiseTopper(students)
+	got := getUniversityWiseTopper(students)
 
-	if !reflect.DeepEqual(mtl, toppersList) {
-		t.Errorf("Expected value %v, but got %v", mtl, toppersList)
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("Expected value %v, but got %v", want, got)
 	}
 }
+
+//Table driven tests

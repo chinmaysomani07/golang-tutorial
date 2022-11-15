@@ -131,7 +131,7 @@ func getOverallTopper(students []Student) Student {
 }
 
 func getUniversityWiseTopper(students []Student) map[string]Student {
-	universityWiseTopperList := make(map[string]Student)
+	universityWiseTopperList := make(map[string]Student) //change naming
 
 	for i := 0; i < len(students); i++ {
 		if _, ok := universityWiseTopperList[students[i].University]; ok {
@@ -146,7 +146,7 @@ func getUniversityWiseTopper(students []Student) map[string]Student {
 	return universityWiseTopperList
 }
 
-func displayUniversityWiseTopper(toppersList map[string]Student) {
+func displayUniversityWiseTopper(toppersList map[string]Student) { //change name
 	for k, v := range toppersList {
 		fmt.Println("University is:", k, "and the topper is:", v)
 	}
