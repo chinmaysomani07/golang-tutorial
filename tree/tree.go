@@ -23,13 +23,8 @@ type Command struct {
 }
 
 const (
-	BoxVer       = "│"
-	BoxHor       = "──"
-	BoxVH        = BoxVer + BoxHor
-	BoxDowAndRig = "┌"
-	BoxDowAndLef = "┐"
-	BoxUpAndRig  = "└"
-	BoxUpAndLef  = "┘"
+	BoxHor      = "──"
+	BoxUpAndRig = "└"
 )
 
 func main() {
