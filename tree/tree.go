@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -18,7 +19,7 @@ import (
 // tree -p -d /Users/chinmaysomani/Desktop/gocodes
 
 type Command struct {
-	option, filepath string
+	option1, option2, filepath string
 }
 
 const (
@@ -33,19 +34,28 @@ const (
 
 func main() {
 
-	command := Command{os.Args[1], os.Args[2]}
+	command := Command{}
+	if strings.Contains(os.Args[1], "/") {
+		command = Command{"", "", os.Args[1]}
+	} else if strings.Contains(os.Args[2], "-") {
+		command = Command{os.Args[1], os.Args[2], os.Args[3]}
+	} else {
+		command = Command{os.Args[1], "", os.Args[2]}
+	}
 
 	dirinfo, paths := getDirectoriesAndPaths(command.filepath)
-	if command.option == "-t" {
-		printByModificationTime(dirinfo, paths)
-	} else if command.option == "-f" {
+	if command.option1 == "-t" {
+		printByModificationTime(dirinfo, paths, command)
+	} else if command.option1 == "-f" {
 		printRelativePath(dirinfo, paths)
-	} else if command.option == "-p" {
+	} else if command.option1 == "-p" {
 		printWithPermission(dirinfo, paths)
-	} else if command.option == "-d" {
+	} else if command.option1 == "-d" {
 		printDirectoryOnly(dirinfo, paths)
-	} else {
+	} else if command.option1 == "" {
 		printPathOfFiles(dirinfo, paths)
+	} else {
+		log.Fatal("This command not defined")
 	}
 }
 
@@ -116,7 +126,7 @@ func printWithPermission(directoriesinfo []os.FileInfo, paths []string) {
 	}
 }
 
-func printByModificationTime(directoriesinfo []os.FileInfo, paths []string) {
+func printByModificationTime(directoriesinfo []os.FileInfo, paths []string, command Command) {
 
 	var files []fs.FileInfo
 	var err error
@@ -124,7 +134,14 @@ func printByModificationTime(directoriesinfo []os.FileInfo, paths []string) {
 	for i := 0; i < len(directoriesinfo); i++ {
 		l := getLengthOfPath(paths[i])
 		if directoriesinfo[i].IsDir() {
-			fmt.Printf("   %v\n", directoriesinfo[i].Name())
+			if command.option2 == "-p" {
+				fmt.Printf("   [%v %v] %v\n", directoriesinfo[i].Mode(), directoriesinfo[i].ModTime(), directoriesinfo[i].Name())
+			} else if command.option2 == "-d" {
+				fmt.Printf("%v%v[%v] %v\n", strings.Repeat("  ", l-5), BoxUpAndRig+BoxHor, directoriesinfo[i].ModTime(), directoriesinfo[i].Name())
+				continue
+			} else {
+				fmt.Printf("   %v%v\n", directoriesinfo[i].ModTime(), directoriesinfo[i].Name())
+			}
 			p := paths[i]
 			files, err = ioutil.ReadDir(p)
 			if err != nil {
@@ -136,7 +153,11 @@ func printByModificationTime(directoriesinfo []os.FileInfo, paths []string) {
 			})
 
 			for i := 0; i < len(files); i++ {
-				fmt.Printf("%v%v%v %v\n", strings.Repeat("  ", l-4), BoxUpAndRig+BoxHor, files[i].Name(), files[i].ModTime())
+				if command.option2 == "-p" {
+					fmt.Printf("%v%v[%v%v] %v\n", strings.Repeat("  ", l-4), BoxUpAndRig+BoxHor, files[i].Mode(), files[i].ModTime(), files[i].Name())
+				} else {
+					fmt.Printf("%v%v%v %v\n", strings.Repeat("  ", l-4), BoxUpAndRig+BoxHor, files[i].Name(), files[i].ModTime())
+				}
 			}
 
 			files = nil
