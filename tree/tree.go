@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 )
 
 // create struct of option and value and desc
@@ -16,100 +17,114 @@ import (
 
 // tree -p -d /Users/chinmaysomani/Desktop/gocodes
 
+type Command struct {
+	option, filepath string
+}
+
+const (
+	BoxVer       = "│"
+	BoxHor       = "──"
+	BoxVH        = BoxVer + BoxHor
+	BoxDowAndRig = "┌"
+	BoxDowAndLef = "┐"
+	BoxUpAndRig  = "└"
+	BoxUpAndLef  = "┘"
+)
+
 func main() {
 
-	info, paths := recursive(os.Args[2])
-	if os.Args[1] == "-t" {
-		acctomodtime(info, paths)
-	} else if os.Args[1] == "-f" {
-		printRelativePath(info, paths)
-	} else if os.Args[1] == "-p" {
-		printWithPermission(info)
-	} else if os.Args[1] == "-d" {
-		printDirectoryOnly(info)
+	command := Command{os.Args[1], os.Args[2]}
+
+	dirinfo, paths := getDirectoriesAndPaths(command.filepath)
+	if command.option == "-t" {
+		printByModificationTime(dirinfo, paths)
+	} else if command.option == "-f" {
+		printRelativePath(dirinfo, paths)
+	} else if command.option == "-p" {
+		printWithPermission(dirinfo, paths)
+	} else if command.option == "-d" {
+		printDirectoryOnly(dirinfo, paths)
 	} else {
-		printPathOfFiles(info)
+		printPathOfFiles(dirinfo, paths)
 	}
 }
 
-func recursive(file string) ([]os.FileInfo, []string) {
+func getDirectoriesAndPaths(file string) ([]os.FileInfo, []string) {
 
-	mydirectoryslice := make([]os.FileInfo, 0)
-	pathSlice := make([]string, 0)
+	directoriesinfo := make([]os.FileInfo, 0)
+	paths := make([]string, 0)
 	err := filepath.Walk(file,
 		func(path string, info os.FileInfo, err error) error {
 
-			pathSlice = append(pathSlice, path)
+			paths = append(paths, path)
 
 			if err != nil {
 				return err
 			}
 
-			mydirectoryslice = append(mydirectoryslice, info)
+			directoriesinfo = append(directoriesinfo, info)
 			return nil
 		})
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	return mydirectoryslice, pathSlice
+	return directoriesinfo, paths
 }
 
-func printPathOfFiles(structure []os.FileInfo) {
-	for i := 0; i < len(structure); i++ {
-		if structure[i].IsDir() {
-			fmt.Println("|   ")
-			fmt.Printf("|-- %s\n", structure[i].Name())
+func printPathOfFiles(directoriesinfo []os.FileInfo, paths []string) {
+	for i := 0; i < len(directoriesinfo); i++ {
+		l := getLengthOfPath(paths[i])
+		if directoriesinfo[i].IsDir() {
+			fmt.Printf("%v%v\n", strings.Repeat("  ", l-4), directoriesinfo[i].Name())
 		} else {
-			fmt.Println("|   ")
-			fmt.Printf("|------- %s\n", structure[i].Name())
+			fmt.Printf("%v%v%v\n", strings.Repeat("  ", l-4), BoxUpAndRig+BoxHor, directoriesinfo[i].Name())
 		}
 	}
 }
 
-func printDirectoryOnly(structure []os.FileInfo) {
-	for i := 0; i < len(structure); i++ {
-		if structure[i].IsDir() {
-			fmt.Println("|   ")
-			fmt.Printf("|-- %s\n", structure[i].Name())
+func printDirectoryOnly(directoriesinfo []os.FileInfo, paths []string) {
+	for i := 0; i < len(directoriesinfo); i++ {
+		l := getLengthOfPath(paths[i])
+		if directoriesinfo[i].IsDir() {
+			fmt.Printf("%v%v%v\n", strings.Repeat("  ", l-5), BoxUpAndRig+BoxHor, directoriesinfo[i].Name())
 		}
 	}
 }
 
-func printRelativePath(myslice []os.FileInfo, pathSlice []string) {
+func printRelativePath(directoriesinfo []os.FileInfo, paths []string) {
 
-	for i := 0; i < len(myslice); i++ {
-		if myslice[i].IsDir() {
-			fmt.Println("|   ")
-			fmt.Printf("|-- %s\n", pathSlice[i])
+	for i := 0; i < len(directoriesinfo); i++ {
+		l := getLengthOfPath(paths[i])
+		if directoriesinfo[i].IsDir() {
+			fmt.Printf("   %v\n", directoriesinfo[i].Name())
 		} else {
-			fmt.Println("|   ")
-			fmt.Printf("|------- %s\n", pathSlice[i])
+			fmt.Printf("%v%v%v\n", strings.Repeat("  ", l-4), BoxUpAndRig+BoxHor, paths[i])
 		}
 	}
 }
 
-func printWithPermission(infoslice []os.FileInfo) {
-	for i := 0; i < len(infoslice); i++ {
-		if infoslice[i].IsDir() {
-			fmt.Println("|   ")
-			fmt.Printf("|--[%v] %v\n", infoslice[i].Mode(), infoslice[i].Name())
+func printWithPermission(directoriesinfo []os.FileInfo, paths []string) {
+
+	for i := 0; i < len(directoriesinfo); i++ {
+		l := getLengthOfPath(paths[i])
+		if directoriesinfo[i].IsDir() {
+			fmt.Printf("   %v\n", directoriesinfo[i].Name())
 		} else {
-			fmt.Println("|   ")
-			fmt.Printf("|------- [%v]%v\n", infoslice[i].Mode(), infoslice[i].Name())
+			fmt.Printf("%v%v[%v]%v\n", strings.Repeat("  ", l-4), BoxUpAndRig+BoxHor, directoriesinfo[i].Mode(), directoriesinfo[i].Name())
 		}
 	}
 }
 
-func acctomodtime(infoslice []os.FileInfo, paths []string) {
+func printByModificationTime(directoriesinfo []os.FileInfo, paths []string) {
 
 	var files []fs.FileInfo
 	var err error
 
-	for i := 0; i < len(infoslice); i++ {
-		if infoslice[i].IsDir() {
-			fmt.Println("|   ")
-			fmt.Printf("|-- %s\n", infoslice[i].Name())
+	for i := 0; i < len(directoriesinfo); i++ {
+		l := getLengthOfPath(paths[i])
+		if directoriesinfo[i].IsDir() {
+			fmt.Printf("   %v\n", directoriesinfo[i].Name())
 			p := paths[i]
 			files, err = ioutil.ReadDir(p)
 			if err != nil {
@@ -121,10 +136,14 @@ func acctomodtime(infoslice []os.FileInfo, paths []string) {
 			})
 
 			for i := 0; i < len(files); i++ {
-				fmt.Printf("|------- %s %v\n", files[i].Name(), files[i].ModTime())
+				fmt.Printf("%v%v%v %v\n", strings.Repeat("  ", l-4), BoxUpAndRig+BoxHor, files[i].Name(), files[i].ModTime())
 			}
 
 			files = nil
 		}
 	}
+}
+
+func getLengthOfPath(path string) int {
+	return len(strings.Split(path, "/"))
 }
