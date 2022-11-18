@@ -59,6 +59,7 @@ func makeTree() string {
 	if treestruct.level > 0 {
 		restring = getLevels(dirinfo, paths, treestruct)
 	}
+
 	return restring
 }
 
@@ -83,63 +84,50 @@ func parseInput() TreeStruct {
 
 func getLevels(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStruct) string {
 
+	res := ""
 	temp := strings.Split(os.Args[len(os.Args)-1], "/")
 	templen := len(temp)
-	//fmt.Println("len of temp: ", len(temp), temp)
-	//root := temp[len(temp)-1]
 
-	//fmt.Println("root is", root)
-	//fmt.Println("paths is:", paths)
+	if treestruct.permission {
+		for i := 0; i < len(paths); i++ {
+			l := getLengthOfPath(paths[i])
+			temp1 := strings.Split(paths[i], "/")
+			if len(temp1) <= templen+treestruct.level {
+				min := int64(math.Round(math.Min(float64(len(temp1)), float64(templen+treestruct.level))))
+				tempslice := temp1[:min]
 
-	for i := 0; i < len(paths); i++ {
-		l := getLengthOfPath(paths[i])
-		temp1 := strings.Split(paths[i], "/")
-		if len(temp1) <= templen+treestruct.level {
-			min := int64(math.Round(math.Min(float64(len(temp1)), float64(templen+treestruct.level))))
-
-			//	fmt.Println("temp1:", temp1[templen:min])
-			tempslice := temp1[:min]
-
-			if directoriesinfo[i].IsDir() {
-				fmt.Printf("%v%v %v\n", strings.Repeat("  ", l-5), BoxUpAndRig+BoxHor, tempslice[len(tempslice)-1])
-			} else {
-				fmt.Printf("%v%v %v\n", strings.Repeat("  ", 0), BoxUpAndRig+BoxHor, temp1[len(tempslice)-1])
+				if directoriesinfo[i].IsDir() {
+					res += fmt.Sprintf("%v%v [%v]%v\n", strings.Repeat("  ", l-5), BoxUpAndRig+BoxHor, directoriesinfo[i].Mode(), tempslice[len(tempslice)-1])
+				} else {
+					res += fmt.Sprintf("%v%v [%v]%v\n", strings.Repeat("  ", 0), BoxUpAndRig+BoxHor, directoriesinfo[i].Mode(), temp1[len(tempslice)-1])
+				}
 			}
 		}
+	} else {
+		for i := 0; i < len(paths); i++ {
+			l := getLengthOfPath(paths[i])
+			temp1 := strings.Split(paths[i], "/")
+			if len(temp1) <= templen+treestruct.level {
+				min := int64(math.Round(math.Min(float64(len(temp1)), float64(templen+treestruct.level))))
+				tempslice := temp1[:min]
 
-		//IMPPPPPP:
-
-		//	tempslice := temp1[:min]
-
-		// if directoriesinfo[i].IsDir() {
-		// 	fmt.Printf("%v%v %v\n", strings.Repeat("  ", l-5), BoxUpAndRig+BoxHor, tempslice[len(tempslice)-1])
-		// } else {
-		// 	fmt.Printf("%v%v %v\n", strings.Repeat("  ", l-4), BoxUpAndRig+BoxHor, temp1[len(tempslice)-1])
-		// }
-
+				if directoriesinfo[i].IsDir() {
+					res += fmt.Sprintf("%v%v %v\n", strings.Repeat("  ", l-5), BoxUpAndRig+BoxHor, tempslice[len(tempslice)-1])
+				} else {
+					res += fmt.Sprintf("%v%v %v\n", strings.Repeat("  ", 0), BoxUpAndRig+BoxHor, temp1[len(tempslice)-1])
+				}
+			}
+		}
 	}
 
-	return ""
+	return res
 }
 
 func getDirectoriesAndPaths(file string, treestruct TreeStruct) ([]os.FileInfo, []string) {
-
-	// temp := strings.Split(os.Args[len(os.Args)-1], "/")
-	// root := temp[len(temp)-1]
 	directoriesinfo := make([]os.FileInfo, 0)
 	paths := make([]string, 0)
 	err := filepath.Walk(file,
 		func(path string, info os.FileInfo, err error) error {
-
-			// levels := strings.Split(root, "/")
-			// if info.IsDir() && info.Name() != root {
-			// 	root = root + "/" + info.Name()
-			// }
-			// //fmt.Println("length of levels:", len(levels), "and path:", path, "info name:", info.Name())
-			// if treestruct.level == len(levels) {
-			// 	return nil
-			// }
-			// fmt.Println("levels areee:", levels, "root is :", root+"bubdci "+info.Name(), "path is:", path)
 
 			paths = append(paths, path)
 
@@ -266,7 +254,6 @@ func permissionsss(directoriesinfo []os.FileInfo, paths []string, treestruct Tre
 
 func relativepathssss(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStruct) string {
 	res := ""
-
 	var files []fs.FileInfo
 	var err error
 
@@ -359,10 +346,6 @@ func relativepathssss(directoriesinfo []os.FileInfo, paths []string, treestruct 
 	}
 
 	return res
-}
-
-func printLevels(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStruct) {
-
 }
 
 func getLengthOfPath(path string) int {
