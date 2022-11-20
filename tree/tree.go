@@ -99,7 +99,7 @@ func getLevels(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStr
 				if directoriesinfo[i].IsDir() {
 					res += fmt.Sprintf("%v%v [%v]%v\n", strings.Repeat("  ", l-5), BoxUpAndRig+BoxHor, directoriesinfo[i].Mode(), tempslice[len(tempslice)-1])
 				} else {
-					res += fmt.Sprintf("%v%v [%v]%v\n", strings.Repeat("  ", 0), BoxUpAndRig+BoxHor, directoriesinfo[i].Mode(), temp1[len(tempslice)-1])
+					res += fmt.Sprintf("%v%v [%v]%v\n", strings.Repeat("  ", l-4), BoxUpAndRig+BoxHor, directoriesinfo[i].Mode(), temp1[len(tempslice)-1])
 				}
 			}
 		}
