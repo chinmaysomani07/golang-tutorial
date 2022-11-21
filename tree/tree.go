@@ -14,8 +14,8 @@ import (
 )
 
 type TreeStruct struct {
-	dironly, modtime, permission, relpath bool
-	level                                 int
+	dironly, modtime, permission, relpath, json bool
+	level                                       int
 }
 
 const (
@@ -53,6 +53,8 @@ func makeTree() string {
 		restring = getModTime(dirinfo, paths, restring)
 	} else if treestruct.dironly {
 		restring = printDirectoryOnly(dirinfo, paths)
+	} else if treestruct.json {
+		restring = getJson(dirinfo, paths, treestruct)
 	}
 
 	return restring
@@ -72,9 +74,101 @@ func parseInput() TreeStruct {
 			treestruct.dironly = true
 		} else if os.Args[i] == "-L" {
 			treestruct.level = parseToInt(os.Args[i+1])
+		} else if os.Args[i] == "-J" {
+			treestruct.json = true
 		}
 	}
 	return treestruct
+}
+
+func getDirectoriesAndPaths(file string, treestruct TreeStruct) ([]os.FileInfo, []string) {
+	directoriesinfo := make([]os.FileInfo, 0)
+	paths := make([]string, 0)
+	err := filepath.Walk(file,
+		func(path string, info os.FileInfo, err error) error {
+
+			if info.IsDir() && info.Name() == ".git" {
+				return filepath.SkipDir
+			}
+
+			if err != nil {
+				return err
+			}
+			paths = append(paths, path)
+			directoriesinfo = append(directoriesinfo, info)
+
+			return nil
+		})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	return directoriesinfo, paths
+}
+
+func getJson(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStruct) string {
+
+	root := os.Args[len(os.Args)-1]
+	files, err := os.ReadDir(paths[0])
+	res := "[\n"
+	res += fmt.Sprintf("%vtype:directory,name:%v,contents:[", " ", os.Args[len(os.Args)-1])
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	res = iterateDir(root, res, files)
+	res += fmt.Sprintf("\n,\n%v{type:report},directories:0,files:0\n]", " ")
+	fmt.Println(res)
+	return ""
+
+}
+
+func iterateDir(root string, res string, files []fs.DirEntry) string {
+	noofdir := 0
+	nooffile := 0
+	lengthroot := len(strings.Split(os.Args[len(os.Args)-1], "/"))
+	for i := 0; i < len(files); i++ {
+		// fmt.Println("the root is:", root)
+
+		//spacedir := 0
+		//spacefile := 0
+
+		// if files[i].IsDir() {
+		// 	spacedir = len(strings.Split(root, "/"))
+		// } else {
+		// 	roottemp := root + "/" + files[i].Name()
+		// 	spacefile = len(strings.Split(roottemp, "/"))
+		// }
+
+		// fmt.Println("space dir is: ", spacedir)
+
+		if files[i].IsDir() {
+			noofdir++
+			lengthdir := len(strings.Split(root, "/"))
+
+			res += fmt.Sprintf("\n%v{type:directory,name:%v,contents:[", strings.Repeat(" ", lengthdir-lengthroot+1), files[i].Name())
+
+			//	fmt.Printf("%v%v\n", strings.Repeat(" ", lengthdir-lengthroot), files[i].Name())
+			files2, err := os.ReadDir(root + "/" + files[i].Name())
+			if err != nil {
+				fmt.Println(err)
+			}
+			root = root + "/" + files[i].Name()
+			res = iterateDir(root, res, files2)
+		} else {
+			nooffile++
+			roottemp := root + "/" + files[i].Name()
+			lengthdir := len(strings.Split(roottemp, "/"))
+			res += fmt.Sprintf("\n%v{type:file,name:%v}", strings.Repeat(" ", lengthdir-lengthroot), files[i].Name())
+			//fmt.Printf("\n%v%v", strings.Repeat(" ", lengthdir-lengthroot-1), files[i].Name())
+		}
+
+		//res = fmt.Sprintf("%v\n]}", strings.Repeat(" ", spacefile-lengthroot))
+	}
+
+	// res += "\n]}"
+	return res
 }
 
 func getLevels(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStruct) string {
@@ -207,31 +301,6 @@ func getLevels(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStr
 	}
 
 	return res
-}
-
-func getDirectoriesAndPaths(file string, treestruct TreeStruct) ([]os.FileInfo, []string) {
-	directoriesinfo := make([]os.FileInfo, 0)
-	paths := make([]string, 0)
-	err := filepath.Walk(file,
-		func(path string, info os.FileInfo, err error) error {
-
-			if info.IsDir() && info.Name() == ".git" {
-				return filepath.SkipDir
-			}
-
-			if err != nil {
-				return err
-			}
-			paths = append(paths, path)
-			directoriesinfo = append(directoriesinfo, info)
-
-			return nil
-		})
-
-	if err != nil {
-		fmt.Println(err)
-	}
-	return directoriesinfo, paths
 }
 
 func printDirectoryOnly(directoriesinfo []os.FileInfo, paths []string) string {
