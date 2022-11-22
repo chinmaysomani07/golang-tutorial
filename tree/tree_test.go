@@ -1,42 +1,36 @@
 package main
 
 import (
-	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestPrintDirectoryOnly(t *testing.T) {
-	treestruct := TreeStruct{true, false, true, false, false, 0}
-	dirinfo, paths := getDirectoriesAndPaths("/Users/chinmaysomani/Desktop/gocodes/tree", treestruct)
+func TestTreeStruct(t *testing.T) {
+	//assert := assert.New(t)
+
+	noofdir := 0
+	nooffiles := 0
+	// want := "/Users/chinmaysomani/Desktop/gocodes/tree\n│── tempfolder\n    │── tempfolder2\n        │── tempfolder3\n"
+	// treestruct := TreeStruct{true, false, false, false, false, 0}
+	// got := getTree(treestruct, "/Users/chinmaysomani/Desktop/gocodes/tree", &noofdir, &nooffiles)
+
+	// assert.Equal(t, want, got, "Not equal")
+
+	treestruct := TreeStruct{false, false, false, false, false, 3}
+
 	want := `/Users/chinmaysomani/Desktop/gocodes/tree
-	│──tempfolder
-	  └──tempfolder2
-	   └──tempfolder3
+	│── go.mod
+	│── go.sum
+	│── tempfolder
+		│── tempfolder2
+			│── tempfile
+			│── tempfolder3
+	│── tree.go
+	│── tree_test.go
 	
-	3 directiories`
-	got := getDirectoryOnly(dirinfo, paths)
+	3 directiries, 6 files`
 
-	bool1 := strings.Contains(want, "tempfolder3")
-	bool2 := strings.Contains(got, "tempfolder3")
-	if bool1 != bool2 {
-		t.Errorf("want %v, got %v", want, got)
-	}
-}
-
-func TestDirOnlyWithPermission(t *testing.T) {
-	treestruct := TreeStruct{true, false, true, false, false, 0}
-	dirinfo, paths := getDirectoriesAndPaths("/Users/chinmaysomani/Desktop/gocodes/tree", treestruct)
-
-	want := `└──[drwxr-xr-x] tree
-	└──[drwxr-xr-x] tempfolder
-	  └──[drwxr-xr-x] tempfolder2
-		└──[drwxr-xr-x] tempfolder3`
-	got := getWithPermissions(dirinfo, paths, treestruct)
-
-	bool1 := strings.Contains(want, "[drwxr-xr-x] tree")
-	bool2 := strings.Contains(got, "[drwxr-xr-x] tree")
-
-	if bool1 != bool2 {
-		t.Errorf("want %v, got %v", want, got)
-	}
+	got := getTree(treestruct, "/Users/chinmaysomani/Desktop/gocodes/tree", &noofdir, &nooffiles)
+	assert.Equal(t, want, got, "Not Equal")
 }
