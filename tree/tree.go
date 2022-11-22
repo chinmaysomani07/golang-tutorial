@@ -108,6 +108,8 @@ func getDirectoriesAndPaths(file string, treestruct TreeStruct) ([]os.FileInfo, 
 
 func getJson(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStruct) string {
 
+	noofdir := 0
+	nooffiles := 0
 	root := os.Args[len(os.Args)-1]
 	files, err := os.ReadDir(paths[0]) //it is the parent directory
 	res := "[\n"
@@ -117,36 +119,33 @@ func getJson(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStruc
 		fmt.Println(err)
 	}
 
-	res = iterateDir(root, res, files)
-	res += fmt.Sprintf("\n]}\n,\n%v{\"type\":\"report\",\"directories\":0,\"files\":0}\n]", " ")
+	res, noofdir, nooffiles = recDir(root, res, files, noofdir, nooffiles)
+	res += fmt.Sprintf("\n]}\n,\n%v{\"type\":\"report\",\"directories\":%v,\"files\":%v}\n]", " ", noofdir, nooffiles)
 	return res
 }
 
-func iterateDir(root string, res string, files []fs.DirEntry) string {
-	noofdir := 0
-	nooffile := 0
+func recDir(root string, res string, files []fs.DirEntry, noofdir int, nooffiles int) (string, int, int) {
 	lengthroot := len(strings.Split(os.Args[len(os.Args)-1], "/"))
 	for i := 0; i < len(files); i++ {
 		lengthdir := len(strings.Split(root, "/"))
 		if files[i].IsDir() {
 			noofdir++
-
 			res += fmt.Sprintf("\n%v{\"type\":\"directory\",\"name\":\"%v\",\"contents\":[", strings.Repeat(" ", lengthdir-lengthroot+2), files[i].Name())
 			files2, err := os.ReadDir(root + "/" + files[i].Name())
 			if err != nil {
 				fmt.Println(err)
 			}
 			root = root + "/" + files[i].Name()
-			res = iterateDir(root, res, files2)
+			res, noofdir, nooffiles = recDir(root, res, files2, noofdir, nooffiles)
 			res += fmt.Sprintf("\n%v]}", strings.Repeat(" ", lengthdir-lengthroot+2))
 		} else {
-			nooffile++
+			nooffiles++
 			roottemp := root + "/" + files[i].Name()
 			lengthdir := len(strings.Split(roottemp, "/"))
 			res += fmt.Sprintf("\n%v{\"type\":\"file\",\"name\":\"%v\"}", strings.Repeat(" ", lengthdir-lengthroot+1), files[i].Name())
 		}
 	}
-	return res
+	return res, noofdir, nooffiles
 }
 
 func getLevels(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStruct) string {
