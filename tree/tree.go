@@ -139,7 +139,6 @@ func iterateDir(root string, res string, files []fs.DirEntry) string {
 			root = root + "/" + files[i].Name()
 			res = iterateDir(root, res, files2)
 			res += fmt.Sprintf("\n%v]}", strings.Repeat(" ", lengthdir-lengthroot+2))
-			//sres += "\n]}"
 		} else {
 			nooffile++
 			roottemp := root + "/" + files[i].Name()
@@ -147,9 +146,6 @@ func iterateDir(root string, res string, files []fs.DirEntry) string {
 			res += fmt.Sprintf("\n%v{\"type\":\"file\",\"name\":\"%v\"}", strings.Repeat(" ", lengthdir-lengthroot+1), files[i].Name())
 		}
 	}
-
-	//res += "\n"
-
 	return res
 }
 
