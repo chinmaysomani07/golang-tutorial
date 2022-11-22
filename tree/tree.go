@@ -111,17 +111,15 @@ func getJson(directoriesinfo []os.FileInfo, paths []string, treestruct TreeStruc
 	root := os.Args[len(os.Args)-1]
 	files, err := os.ReadDir(paths[0]) //it is the parent directory
 	res := "[\n"
-	res += fmt.Sprintf("%v{type:directory,name:%v,contents:[", " ", os.Args[len(os.Args)-1])
+	res += fmt.Sprintf("%v{\"type\":\"directory\",\"name\":\"%v\",\"contents\":[", " ", os.Args[len(os.Args)-1])
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	res = iterateDir(root, res, files)
-	res += fmt.Sprintf("\n,\n%v{type:report},directories:0,files:0}\n]", " ")
-	fmt.Println(res)
-	return ""
-
+	res += fmt.Sprintf("\n]}\n,\n%v{\"type\":\"report\",\"directories\":0,\"files\":0}\n]", " ")
+	return res
 }
 
 func iterateDir(root string, res string, files []fs.DirEntry) string {
@@ -133,23 +131,25 @@ func iterateDir(root string, res string, files []fs.DirEntry) string {
 		if files[i].IsDir() {
 			noofdir++
 
-			res += fmt.Sprintf("\n%v{type:directory,name:%v,contents:[", strings.Repeat(" ", lengthdir-lengthroot+2), files[i].Name())
+			res += fmt.Sprintf("\n%v{\"type\":\"directory\",\"name\":\"%v\",\"contents\":[", strings.Repeat(" ", lengthdir-lengthroot+2), files[i].Name())
 			files2, err := os.ReadDir(root + "/" + files[i].Name())
 			if err != nil {
 				fmt.Println(err)
 			}
 			root = root + "/" + files[i].Name()
 			res = iterateDir(root, res, files2)
+			res += fmt.Sprintf("\n%v]}", strings.Repeat(" ", lengthdir-lengthroot+2))
+			//sres += "\n]}"
 		} else {
 			nooffile++
 			roottemp := root + "/" + files[i].Name()
 			lengthdir := len(strings.Split(roottemp, "/"))
-			res += fmt.Sprintf("\n%v{type:file,name:%v}", strings.Repeat(" ", lengthdir-lengthroot+1), files[i].Name())
+			res += fmt.Sprintf("\n%v{\"type\":\"file\",\"name\":\"%v\"}", strings.Repeat(" ", lengthdir-lengthroot+1), files[i].Name())
 		}
 	}
 
-	//res += fmt.Sprintf("%v\n]}", strings.Repeat(" ", lendirspace-lengthroot+2))
-	res += "\n]}"
+	//res += "\n"
+
 	return res
 }
 
