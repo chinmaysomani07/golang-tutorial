@@ -34,20 +34,16 @@ const (
 )
 
 func main() {
-
 	fmt.Println(makeTree())
 }
 
 func makeTree() string {
-
 	treestruct := parseInput()
 	restring := getTree(treestruct, os.Args[len(os.Args)-1])
-
 	return restring
 }
 
 func parseInput() TreeStruct {
-
 	treestruct := TreeStruct{false, false, false, false, false, false, 0}
 	for i := 0; i < len(os.Args); i++ {
 		if os.Args[i] == "-t" {
@@ -70,7 +66,6 @@ func parseInput() TreeStruct {
 }
 
 func getTree(treestruct TreeStruct, pathfile string) string {
-
 	noOfDir := 0
 	noOfFiles := 0
 	var temp = ""
@@ -107,14 +102,13 @@ func getTree(treestruct TreeStruct, pathfile string) string {
 			}
 
 			relPath, err := filepath.Rel(pathfile, path)
-			currLevel := len(strings.Split(relPath, "/"))
-
-			if treestruct.level > 0 && currLevel-1 == treestruct.level {
-				return filepath.SkipDir
-			}
-
 			if err != nil {
 				return err
+			}
+			currLevel := len(strings.Split(relPath, "/"))
+
+			if treestruct.level > 0 && currLevel-1 == treestruct.level { //make sure we don't go beyond a specified level
+				return filepath.SkipDir
 			}
 
 			if treestruct.dironly {
@@ -124,18 +118,15 @@ func getTree(treestruct TreeStruct, pathfile string) string {
 			}
 
 			result += strings.Repeat(Spaces4, currLevel-1) + BoxVH + " "
-
 			if treestruct.permission {
 				result += OpenBrkt + info.Mode().String() + CloseBrkt + " "
 			}
-
 			if treestruct.relpath {
 				result += pathfile + "/"
 			}
 			result += info.Name() + "\n"
 			return nil
 		})
-
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -146,7 +137,6 @@ func getTree(treestruct TreeStruct, pathfile string) string {
 }
 
 func recGetInJson(root string, res string, n int, treestruct TreeStruct, args os.FileInfo) string {
-
 	files, err := os.ReadDir(root)
 	if err != nil {
 		fmt.Println(err)
@@ -180,7 +170,6 @@ func recGetInJson(root string, res string, n int, treestruct TreeStruct, args os
 			res += strings.Repeat(Space, n+5) + "{\"type\":\"file\",\"name\":" + "\"" + f.Name() + "\"" + getPermissions(treestruct, fileinfo) + "}" + NewLine
 			continue
 		}
-
 		res += strings.Repeat(Space, n+5) + "{\"type\":\"directory\",\"name\":" + "\"" + f.Name() + "\"" + getPermissions(treestruct, fileinfo) + ",\"contents\":[" + NewLine
 		fileName := root + "/" + f.Name()
 		res = recGetInJson(fileName, res, n+1, treestruct, args)
@@ -193,7 +182,6 @@ func recGetInJson(root string, res string, n int, treestruct TreeStruct, args os
 }
 
 func recGetInXML(root string, line string, n int, treestruct TreeStruct, args os.FileInfo) string {
-
 	files, err := os.ReadDir(root)
 	if err != nil {
 		fmt.Println(err)
@@ -237,7 +225,6 @@ func recGetInXML(root string, line string, n int, treestruct TreeStruct, args os
 
 func getFilesAndDirCount(treestruct TreeStruct, files, dir int) string {
 	var str string
-
 	if treestruct.dironly {
 		if treestruct.xml {
 			str += "  <report>" + NewLine
@@ -249,7 +236,6 @@ func getFilesAndDirCount(treestruct TreeStruct, files, dir int) string {
 		} else {
 			str = fmt.Sprintf("%v directories", dir)
 		}
-
 	} else {
 		if treestruct.xml {
 			str += "  <report>" + NewLine
@@ -282,7 +268,6 @@ func getPermissions(treestruct TreeStruct, fileinfo os.FileInfo) string {
 
 func parseToInt(input string) int {
 	number, err := strconv.ParseInt(input, 10, 32)
-
 	if err != nil {
 		log.Println(err.Error())
 		return 0
